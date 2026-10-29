@@ -1,0 +1,31 @@
+# Secrets
+.env
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Packaging leftovers
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
+
+# Generated model artifacts
+models/
+
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/dist/
