@@ -808,7 +808,8 @@ The integration:
 - Reads `MONGODB_URI` from `.env`.
 - Uses a three-second server selection timeout.
 - Pings MongoDB before use.
-- Writes predictions to the `predictions` collection.
+- Writes live predictions to the `predictions` collection.
+- Can import the validated CSV into the same collection.
 - Reads recent predictions ordered by `created_at`.
 - Excludes MongoDB's `_id` from history responses.
 - Closes the client in a `finally` block.
@@ -826,6 +827,24 @@ predictions
 ```
 
 The application does not expose MongoDB credentials to the browser.
+
+### Seed the existing CSV
+
+MongoDB is not populated automatically by model training or Flask startup.
+To import the existing validated CSV once, run this from the project root:
+
+```powershell
+python -m backend.seed_database
+```
+
+The command imports the 800 CSV rows as `record_type: "dataset_record"` and
+marks them with `source_dataset: "lpu_student_performance.csv"`. It uses a
+unique key made from the source dataset and `student_id`, so running the command
+again refreshes existing dataset records instead of creating duplicates.
+
+Future form submissions continue to be saved as live prediction records by
+`POST /api/predict`. They are distinguishable because they do not have the
+`dataset_record` type.
 
 ---
 
