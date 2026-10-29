@@ -171,6 +171,10 @@ CA_marks + MTE_marks + 45 >= 40
 
 If that expression is below 40, passing is impossible even with a perfect ETE.
 A low model prediction by itself is **not** mathematical impossibility.
+With the current valid input ranges, CA and MTE can never be negative, so the
+maximum possible total is always at least 45. Therefore, the impossible branch
+is defensive logic for future callers or changed rules; it is unreachable for
+currently valid API inputs.
 
 For example:
 
@@ -839,8 +843,10 @@ python -m backend.seed_database
 
 The command imports the 800 CSV rows as `record_type: "dataset_record"` and
 marks them with `source_dataset: "lpu_student_performance.csv"`. It uses a
-unique key made from the source dataset and `student_id`, so running the command
-again refreshes existing dataset records instead of creating duplicates.
+partial unique index for seeded records, keyed by the source dataset and
+`student_id`, so running the command again refreshes existing dataset records
+instead of creating duplicates. Because the index applies only to seeded
+records, multiple live predictions with the same `student_id` are allowed.
 
 Future form submissions continue to be saved as live prediction records by
 `POST /api/predict`. They are distinguishable because they do not have the

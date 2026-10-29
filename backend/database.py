@@ -11,6 +11,12 @@ from .train_model import BASE_DIR
 
 load_dotenv(BASE_DIR / ".env")
 
+DATASET_INDEX_NAME = "dataset_seed_student_unique"
+DATASET_PARTIAL_FILTER = {
+    "record_type": "dataset_record",
+    "source_dataset": "lpu_student_performance.csv",
+}
+
 
 def get_client() -> MongoClient:
     uri = os.getenv("MONGODB_URI", "").strip()
@@ -42,16 +48,24 @@ def recent_predictions(limit: int) -> list[dict]:
         client.close()
 
 
+def _ensure_dataset_index(collection) -> None:
+    existing_index = collection.index_information().get(DATASET_INDEX_NAME)
+    if existing_index and existing_index.get("partialFilterExpression") != DATASET_PARTIAL_FILTER:
+        collection.drop_index(DATASET_INDEX_NAME)
+    collection.create_index(
+        [("record_type", 1), ("source_dataset", 1), ("student_id", 1)],
+        unique=True,
+        name=DATASET_INDEX_NAME,
+        partialFilterExpression=DATASET_PARTIAL_FILTER,
+    )
+
+
 def seed_dataset(records: list[dict]) -> int:
     """Upsert validated CSV records without duplicating an existing seed."""
     client = get_client()
     try:
         collection = client["lpu_student_performance_db"]["predictions"]
-        collection.create_index(
-            [("record_type", 1), ("source_dataset", 1), ("student_id", 1)],
-            unique=True,
-            name="dataset_seed_student_unique",
-        )
+        _ensure_dataset_index(collection)
         operations = [
             UpdateOne(
                 {

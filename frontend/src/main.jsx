@@ -299,7 +299,7 @@ function HeroVisual({ onApplyScenario }) {
           <span className="pulse-dot-emerald" />
           <span>Live ML Signal Mapping</span>
           <span className="pill-divider">·</span>
-          <small>R² = 0.887</small>
+          <small>R² = 0.671</small>
         </div>
       </div>
 
@@ -434,7 +434,7 @@ function HeroVisual({ onApplyScenario }) {
         </div>
         <div className="hero-foot-tech">
           <span className="pulse-dot-white" />
-          <span>Linear Regression & Random Forest Synced</span>
+          <span>Linear Regression & Decision Tree Synced</span>
         </div>
       </div>
     </div>
